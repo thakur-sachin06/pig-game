@@ -9,31 +9,64 @@ GAME RULES:
 
 */
 
-var scores, roundScore, activePlayer, isGamePlaying;
+var scores,
+  roundScore,
+  activePlayer,
+  isGamePlaying,
+  prevScore = 0;
 
 //document.querySelector("#current-" + activePlayer).textContent = dice;
 
 /* lecture-48 <em> is an html element. written in "". else it is taken as js code
  with innerHTML we hav used <em> to emphasize the dice value.*/
 initializeGame();
+
+function initializeGame() {
+  scores = [0, 0];
+  roundScore = 0;
+  activePlayer = 0;
+  isGamePlaying = true;
+  document.querySelector(".dice").style.display = "none";
+  document.getElementById("score-0").textContent = "0";
+  document.getElementById("current-0").textContent = "0";
+  document.getElementById("score-1").textContent = "0";
+  document.getElementById("current-1").textContent = "0";
+  document.getElementById(`name-0`).textContent = "PLAYER 1";
+  document.getElementById(`name-1`).textContent = "PLAYER 2";
+  document.querySelector(".player-0-panel").classList.remove("winner");
+  document.querySelector(".player-1-panel").classList.remove("winner");
+  document.querySelector(".player-0-panel").classList.remove("active");
+  document.querySelector(".player-1-panel").classList.remove("active");
+  document.querySelector(".player-0-panel").classList.add("active");
+}
+
 //----------- lecture 49 --------------->>>>
 // event listener on Roll button
 document.querySelector(".btn-roll").addEventListener("click", function() {
   if (isGamePlaying) {
     var dice = Math.floor(Math.random() * 6) + 1;
-    var diceDOM = document.querySelector(".dice");
-    diceDOM.style.display = "block";
-    diceDOM.src = `dice-${dice}.png`; //to select dice image on the basis of random number. see index file <img src=''>
-
-    if (dice !== 1) {
-      roundScore += dice;
-      document.querySelector("#current-" + activePlayer).innerHTML =
-        "<em>" + roundScore + "</em>";
-      /* +activePlayer is used to select player 1 or player 2 and add score to the active player only.
-   textContent this will only set the plain text to html element.
-   if you also want to some html to set on the selected element use (innerHTML).*/
-    } else {
+    if (dice == 6 && prevScore == 6) {
+      roundScore = 0;
+      scores[activePlayer] = 0;
+      alert("You have rolled two times 6.");
       changePlayersTurn();
+    } else {
+      prevScore = dice;
+      var diceDOM = document.querySelector(".dice");
+      diceDOM.style.display = "block";
+      diceDOM.src = `dice-${dice}.png`; //to select dice image on the basis of random number. see index file <img src=''>
+
+      if (dice !== 1) {
+        roundScore += dice;
+        document.querySelector("#current-" + activePlayer).innerHTML =
+          "<em>" + roundScore + "</em>";
+        /* +activePlayer is used to select player 1 or player 2 and add score to the active player only.
+     textContent this will only set the plain text to html element.
+     if you also want to some html to set on the selected element use (innerHTML).*/
+      } else {
+        alert("You have rolled 1.");
+        changePlayersTurn();
+      }
     }
   }
 });
@@ -45,7 +78,7 @@ document.querySelector(".btn-hold").addEventListener("click", function() {
     scores[activePlayer] += roundScore;
     document.querySelector(`#score-${activePlayer}`).textContent =
       scores[activePlayer]; //settings global score
-    if (scores[activePlayer] >= 10) {
+    if (scores[activePlayer] >= 100) {
       document.querySelector(`#name-${activePlayer}`).textContent = "WINNER!";
       document.querySelector(".dice").style.display = "none";
       document
@@ -74,23 +107,4 @@ function changePlayersTurn() {
   document.querySelector(".player-0-panel").classList.toggle("active");
   document.querySelector(".player-1-panel").classList.toggle("active");
   document.querySelector(".dice").style.display = "none";
-}
-
-function initializeGame() {
-  scores = [0, 0];
-  roundScore = 0;
-  activePlayer = 0;
-  isGamePlaying = true;
-  document.querySelector(".dice").style.display = "none";
-  document.getElementById("score-0").textContent = "0";
-  document.getElementById("current-0").textContent = "0";
-  document.getElementById("score-1").textContent = "0";
-  document.getElementById("current-1").textContent = "0";
-  document.getElementById(`name-0`).textContent = "PLAYER 1";
-  document.getElementById(`name-1`).textContent = "PLAYER 2";
-  document.querySelector(".player-0-panel").classList.remove("winner");
-  document.querySelector(".player-1-panel").classList.remove("winner");
-  document.querySelector(".player-0-panel").classList.remove("active");
-  document.querySelector(".player-1-panel").classList.remove("active");
-  document.querySelector(".player-0-panel").classList.add("active");
 }
